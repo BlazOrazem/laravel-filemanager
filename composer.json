@@ -1,6 +1,6 @@
 {
   "name": "unisharp/laravel-filemanager",
-  "description": "A file upload/editor intended for use with Laravel 5 and CKEditor / TinyMCE",
+  "description": "A file upload/editor intended for use with Laravel 6.4 and CKEditor / TinyMCE",
   "license": "MIT",
   "keywords": [
     "filemanager",
@@ -23,16 +23,16 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0",
+    "php": "^7.2",
     "ext-exif": "*",
     "ext-fileinfo": "*",
-    "illuminate/support": ">=4.2.0",
-    "intervention/image": "2.*"
+    "illuminate/support": "^6.0",
+    "intervention/image": "^2.0"
   },
   "require-dev": {
     "orchestra/testbench": "~3.0",
-    "phpspec/phpspec": "~2.1",
-    "phpunit/phpunit": "~4.8"
+    "phpspec/phpspec": "^6.0",
+    "phpunit/phpunit": "^8.0"
   },
   "suggest": {
     "ext-gd": "to use GD library based image processing.",

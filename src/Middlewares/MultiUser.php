@@ -27,11 +27,11 @@ class MultiUser
 
     private function validDir($previous_dir)
     {
-        if (starts_with($previous_dir, $this->rootFolder('share'))) {
+        if (Str::startsWith($previous_dir, $this->rootFolder('share'))) {
             return true;
         }
 
-        if (starts_with($previous_dir, $this->rootFolder('user'))) {
+        if (Str::startsWith($previous_dir, $this->rootFolder('user'))) {
             return true;
         }
 

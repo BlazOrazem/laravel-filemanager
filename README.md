@@ -1,71 +1,118 @@
-# Laravel Filemanager
+# Laravel Filemanager  
+
 [![Latest Stable Version](https://poser.pugx.org/unisharp/laravel-filemanager/v/stable)](https://packagist.org/packages/unisharp/laravel-filemanager)
 [![Total Downloads](https://poser.pugx.org/unisharp/laravel-filemanager/downloads)](https://packagist.org/packages/unisharp/laravel-filemanager)
 [![License](https://poser.pugx.org/unisharp/laravel-filemanager/license)](https://packagist.org/packages/unisharp/laravel-filemanager)
 
- * Document : [unisharp.github.io/laravel-filemanager](http://unisharp.github.io/laravel-filemanager/)
-   * [Installation](http://unisharp.github.io/laravel-filemanager/installation)
-   * [Integration](http://unisharp.github.io/laravel-filemanager/integration)
-   * [Config](http://unisharp.github.io/laravel-filemanager/config)
-   * [Customization](http://unisharp.github.io/laravel-filemanager/customization)
-   * [Events](http://unisharp.github.io/laravel-filemanager/events)
-   * [Upgrade](http://unisharp.github.io/laravel-filemanager/upgrade)
- * Demo : [Laravel Filemanager container](https://github.com/UniSharp/laravel-filemanager-example-5.3)
+This is a Laravel Filemanager (LFM) fork which I created because I required workable file manager for   
+Laravel ^6.4 on PHP ^7.2. For the official documentation please refer to the original repository at  
+[https://github.com/UniSharp/laravel-filemanager](https://github.com/UniSharp/laravel-filemanager).  
+  
+## Version  
+  
+This version is a forked tag **v1.9.2** which is the latest official v1.* tag. Not many things are modified,
+only the Laravel 6.4 compatibility is handled.
 
-## v1.8 released
- * Please follow the intructions in [upgrade document](https://unisharp.github.io/laravel-filemanager/upgrade).
- * Important changes :
-   * Fix Windows compatibility (utf-8 file names and folder names).
-   * New feature : Copy & Crop. Thanks [gwleuverink](https://github.com/gwleuverink).
-   * [Config document](https://unisharp.github.io/laravel-filemanager/config) is refactored.
+## Require LFM in Composer  
 
-## Security
+1. Open and edit **composer.json** file in your Laravel ^6.4 project
+2. Add a package to your `require` section:
+```
+"require": {
+	"unisharp/laravel-filemanager": "dev-master",
+	...
+},
+```
+3. After the `require` section add a `repositories` section (if you don't have it already) and add:
+```
+"repositories": [{  
+	"type": "package",  
+	"package": {  
+		"name": "unisharp/laravel-filemanager",  
+		"version": "dev-master",  
+		"source": {  
+			"url": "git@github.com:BlazOrazem/laravel-filemanager.git",  
+			"type": "git",  
+			"reference": "laravel-64"  
+		},  
+		"autoload": {  
+			"psr-4": {  
+				"UniSharp\\LaravelFilemanager\\": "src/"  
+			}  
+		},  
+		"extra": {  
+			"laravel": {  
+				"providers": [  
+					"UniSharp\\LaravelFilemanager\\LaravelFilemanagerServiceProvider"  
+				]  
+			}  
+		}  
+	}  
+}],
+```
+4. Save and close the file and run **composer update** in your preferred terminal.
 
-It is important to note that if you use your own routes **you must protect your routes to Laravel-Filemanager in order to prevent unauthorized uploads to your server**. Fortunately, Laravel makes this very easy.
+## Publish the configuration file
 
-If, for example, you want to ensure that only logged in users have the ability to access the Laravel-Filemanager, simply wrap the routes in a group, perhaps like this:
+After the Composer concludes with the installation, run the command:
+```
+php artisan vendor:publish --tag=lfm_config
+```
+and edit the file `/config/lfm.php` accordingly (configure your middlewares, URL prefix, etc.).
 
-```php
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('/laravel-filemanager', '\UniSharp\LaravelFilemanager\controllers\LfmController@show');
-    Route::post('/laravel-filemanager/upload', '\UniSharp\LaravelFilemanager\controllers\UploadController@upload');
-    // list all lfm routes here...
-});
+## Setup LFM routes
+
+Open your routes file, eg. `/routes/web.php` and add lines:
+```
+// Laravel file manager
+Route::get('/laravel-filemanager', '\UniSharp\LaravelFilemanager\Controllers\LfmController@show');
+Route::post('/laravel-filemanager/upload', '\UniSharp\LaravelFilemanager\Controllers\UploadController@upload');
+```
+Now run the commands:
+```
+php artisan route:clear
+php artisan config:clear
 ```
 
-This approach ensures that only authenticated users have access to the Laravel-Filemanager. If you are using Middleware or some other approach to enforce security, modify as needed.
+## Initialize LFM in TinyMCE
 
-**If you use the laravel-filemanager default route, make sure the `auth` middleware (set in config/lfm.php) is enabled and functional**.
-
-## v2.0 progress
-* [x] (done) Unit test
-* [x] (done) Integrate with Laravel Storage
-* [x] (done) Multiple selection
-* [ ] Configurable disk of storage
-* [ ] (in progress) Responsive design
-* [ ] (in progress) Config refactoring
-* [x] (done) JSON APIs
-* [ ] Move to folder function
-* [ ] Applying MIME icon generator
-* [x] (done) Bootstrap 4 support
-
-
-## Contributors & Credits
-
-### Developers / Maintainers
-
- * [Stream](https://github.com/g0110280)
- * [@gwleuverink](https://github.com/gwleuverink)
- * All [@UniSharp](https://github.com/UniSharp) members
-
-### Contributors
-
- * [All contibutors](https://github.com/UniSharp/laravel-filemanager/graphs/contributors) from GitHub. (issues / PR)
- * [@taswler](https://github.com/tsawler) the original author of this package.
- * Nathan for providing security suggestions.
-
-### Credits
-
- * [@olivervogel](https://github.com/olivervogel) for the awesome [image library](https://github.com/Intervention/image).
- * SVG Loaders by [Sam](http://samherbert.net/svg-loaders/) (Licensed MIT)
-
+This LFM is working properly with TinyMCE version 4.5.3. (the only version, that was tested). 
+To initialize it, you need to add some Javascript to your template and include it after the TinyMCE integration.
+```
+$(document).ready(function() {
+	var editor_config = {  
+		path_absolute : "/admin/",  
+		selector: "textarea.wysiwyg-editor",  
+		plugins: [  
+			"advlist autolink lists link image charmap print preview hr anchor pagebreak",  
+			"searchreplace wordcount visualblocks visualchars code fullscreen",  
+			"insertdatetime media nonbreaking save table contextmenu directionality",  
+			"emoticons template paste textcolor colorpicker textpattern"  
+		],  
+		toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",  
+		relative_urls: false,  
+		file_browser_callback : function(field_name, url, type, win) {  
+			var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;  
+			var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;  
+  
+			var cmsURL = editor_config.path_absolute + 'laravel-filemanager?field_name=' + field_name;  
+			if (type == 'image') {  
+				cmsURL = cmsURL + "&type=Images";  
+			} else {  
+				cmsURL = cmsURL + "&type=Files";  
+			}  
+  
+			tinyMCE.activeEditor.windowManager.open({  
+				file : cmsURL,  
+				title : 'Filemanager',  
+				width : x * 0.8,  
+				height : y * 0.8,  
+				resizable : "yes",  
+				close_previous : "no"  
+			});  
+		}  
+	};  
+  
+	tinymce.init(editor_config);
+});
+```
