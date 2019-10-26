@@ -25,29 +25,29 @@ only the Laravel 6.4 compatibility is handled.
 ```
 3. After the `require` section add a `repositories` section (if you don't have it already) and add:
 ```
-"repositories": [{  
-  "type": "package",  
-  "package": {  
-    "name": "unisharp/laravel-filemanager",  
-    "version": "dev-master",  
-    "source": {  
-      "url": "git@github.com:BlazOrazem/laravel-filemanager.git",  
-      "type": "git",  
-      "reference": "laravel-64"  
-    },  
-    "autoload": {  
-      "psr-4": {  
-        "UniSharp\\LaravelFilemanager\\": "src/"  
-      }  
-    },  
-    "extra": {  
-      "laravel": {  
-        "providers": [  
-          "UniSharp\\LaravelFilemanager\\LaravelFilemanagerServiceProvider"  
-        ]  
-      }  
-    }  
-  }  
+"repositories": [{
+  "type": "package",
+  "package": {
+    "name": "unisharp/laravel-filemanager",
+    "version": "dev-master",
+    "source": {
+      "url": "git@github.com:BlazOrazem/laravel-filemanager.git",
+      "type": "git",
+      "reference": "laravel-64"
+    },
+    "autoload": {
+      "psr-4": {
+        "UniSharp\\LaravelFilemanager\\": "src/"
+      }
+    },
+    "extra": {
+      "laravel": {
+        "providers": [
+          "UniSharp\\LaravelFilemanager\\LaravelFilemanagerServiceProvider"
+        ]
+      }
+    }
+  }
 }],
 ```
 4. Save and close the file and run **composer update** in your preferred terminal.
@@ -76,43 +76,53 @@ php artisan config:clear
 
 ## Initialize LFM in TinyMCE 4
 
-This LFM is working properly with TinyMCE version 4. The version on which was tested is 4.5.3 - 4.9.6.
-To initialize it, you need to add some Javascript to your template and include it after the TinyMCE integration.
+This LFM is working properly with TinyMCE version 4. It was tested on two versions, 4.5.3 and 4.9.6 (latest v4).
+
+The first step is to include a TinyMCE library in your `<head>` section:
 ```
+<script src='https://cdn.tiny.cloud/1/no-api-key/tinymce/4/tinymce.min.js' referrerpolicy="origin"></script>
+```
+
+The second step is to include the TinyMCE configuration. Pay attention to the `file_browser_callback` property,
+since this is the part where LFM is integrated into the TinyMCE.
+```
+<script>
 $(document).ready(function() {
-  var editor_config = {  
-    path_absolute : "/admin/",  
-    selector: "textarea.wysiwyg-editor",  
-    plugins: [  
-      "advlist autolink lists link image charmap print preview hr anchor pagebreak",  
-      "searchreplace wordcount visualblocks visualchars code fullscreen",  
-      "insertdatetime media nonbreaking save table contextmenu directionality",  
-      "emoticons template paste textcolor colorpicker textpattern"  
-    ],  
-    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",  
-    relative_urls: false,  
-    file_browser_callback : function(field_name, url, type, win) {  
-      var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;  
-      var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;  
-  
-      var cmsURL = editor_config.path_absolute + 'laravel-filemanager?field_name=' + field_name;  
-      if (type == 'image') {  
-        cmsURL = cmsURL + "&type=Images";  
-      } else {  
-        cmsURL = cmsURL + "&type=Files";  
-      }  
-  
-      tinyMCE.activeEditor.windowManager.open({  
-        file : cmsURL,  
-        title : 'Filemanager',  
-        width : x * 0.8,  
-        height : y * 0.8,  
-        resizable : "yes",  
-        close_previous : "no"  
-      });  
-    }  
-  };  
-  
+  let editor_config = {
+    path_absolute : "/admin/",
+    selector: "textarea.wysiwyg-editor",
+    plugins: [
+      "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+      "searchreplace wordcount visualblocks visualchars code fullscreen",
+      "insertdatetime media nonbreaking save table contextmenu directionality",
+      "emoticons template paste textcolor colorpicker textpattern"
+    ],
+    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media",
+    relative_urls: false,
+    theme: 'modern',
+    file_browser_callback : function(field_name, url, type, win) {
+      let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+      let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+      let cmsURL = editor_config.path_absolute + 'laravel-filemanager?field_name=' + field_name;
+      if (type == 'image') {
+        cmsURL = cmsURL + "&type=Images";
+      } else {
+        cmsURL = cmsURL + "&type=Files";
+      }
+
+      tinyMCE.activeEditor.windowManager.open({
+        file : cmsURL,
+        title : 'File manager',
+        width : x * 0.8,
+        height : y * 0.8,
+        resizable : "yes",
+        close_previous : "no"
+      });
+    }
+  };
+
   tinymce.init(editor_config);
 });
+</script>
 ```
